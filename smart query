@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Tutor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            padding: 20px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .container {
+            width: 50%;
+            margin: 0 auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .chat-box {
+            margin-bottom: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+            max-height: 400px;
+            overflow-y: auto;
+            border: 1px solid #ddd;
+        }
+        .chat-box div {
+            margin-bottom: 15px;
+        }
+        .input-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        .input-area input {
+            width: 80%;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .input-area button {
+            width: 15%;
+            padding: 10px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .input-area button:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>AI Tutor System</h1>
+
+    <div class="container">
+        <div id="chat-box" class="chat-box">
+            <!-- Chat history will be dynamically updated here -->
+        </div>
+
+        <div class="input-area">
+            <input type="text" id="query-input" placeholder="Ask a question...">
+            <button id="submit-btn">Ask</button>
+        </div>
+    </div>
+
+    <script>
+        // Function to add new messages to the chatbox
+        function addMessageToChatBox(message, sender) {
+            const chatBox = document.getElementById("chat-box");
+            const messageElement = document.createElement("div");
+            messageElement.textContent = ${sender}: ${message};
+            chatBox.appendChild(messageElement);
+            chatBox.scrollTop = chatBox.scrollHeight; // Auto-scroll to the latest message
+        }
+
+        // Handling the ask button click
+        document.getElementById("submit-btn").addEventListener("click", async function() {
+            const query = document.getElementById("query-input").value;
+            if (query) {
+                // Display the student's message
+                addMessageToChatBox(query, "Student");
+
+                // Clear the input field
+                document.getElementById("query-input").value = "";
+
+                // Send the query to the server
+                const response = await fetch("/ask", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded"
+                    },
+                    body: query=${encodeURIComponent(query)}
+                });
+
+                const data = await response.json();
+
+                // Display the tutor's response
+                addMessageToChatBox(data.response, "Tutor");
+            }
+        });
+    </script>
+</body>
+</html>
